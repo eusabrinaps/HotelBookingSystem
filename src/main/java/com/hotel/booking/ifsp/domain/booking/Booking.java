@@ -25,6 +25,11 @@ public class Booking {
         this.status = status;
     }
 
+    public static Booking reconstitute(BookingId id, GuestId guestId, RoomCategory roomCategory,
+                                       Period period, java.math.BigDecimal totalValue, BookingStatus status) {
+        return new Booking(id, guestId, roomCategory, period, totalValue, status);
+    }
+
     public static Booking create(GuestId guestId, RoomCategory roomCategory, Period period) {
         Objects.requireNonNull(guestId, "Guest ID cannot be null");
         Objects.requireNonNull(roomCategory, "Room category cannot be null");
