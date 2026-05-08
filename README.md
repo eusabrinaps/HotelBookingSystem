@@ -1,59 +1,147 @@
-# 🏨 Hotel Booking System
+# HotelSystem
 
-Um sistema de gerenciamento de reservas de hotel robusto e seguro, focado em regras de negócio complexas e integridade de dados. Desenvolvido em **Java** com foco em **Domain-Driven Design (DDD)** e **Test-Driven Development (TDD)**.
+Sistema de gerenciamento de reservas de hotel com backend em Spring Boot e frontend em React.
 
-## 🚀 Funcionalidades
+## Estrutura do projeto
 
-O sistema gerencia o ciclo de vida completo de uma hospedagem, garantindo consistência em todas as etapas:
+```
+HotelSystem/
+├── src/                  → código-fonte do backend (Spring Boot)
+├── frontend/             → interface web (React)
+├── hotel.db              → banco de dados SQLite (gerado automaticamente)
+└── pom.xml
+```
 
-*   **Gestão de Hóspedes (Guests):** Cadastro de hóspedes com validação de unicidade de documentos (CPF).
-*   **Gestão de Reservas (Bookings):** 
-    *   Criação de reservas com validação de disponibilidade de quartos e bloqueio de datas retroativas.
-    *   Atualização de reservas inteligente (prevenindo conflitos de datas, inclusive com a própria reserva).
-*   **Ciclo de Vida da Hospedagem (Máquina de Estados):**
-    *   **Check-in:** Validação temporal estrita (bloqueia check-ins antes da data agendada).
-    *   **Em Andamento:** Bloqueio de alterações cadastrais enquanto o hóspede está no status `CHECKED_IN`.
-    *   **Check-out & Conclusão:** O sistema exige que a reserva passe pelo check-in antes de ser concluída (`COMPLETED`), evitando furos no fluxo.
-*   **Autenticação & Segurança:** Validação de payload de entrada (Bean Validation) para rotas de login e registro (`@NotBlank`, `@Email`).
+---
 
-## 🛠️ Tecnologias Utilizadas
+## Pré-requisitos
 
-Este projeto é **100% Java** e utiliza as seguintes tecnologias no ecossistema:
+- Java 21
+- Maven
+- Node.js 18+ e npm
 
-*   **Java 17+**
-*   **Spring Boot** (Web, Data JPA, Validation)
-*   **JUnit 5 & Mockito** (Testes Unitários e de Integração)
-*   **Maven / Gradle** (Gerenciamento de dependências)
+---
 
-## 🏗️ Arquitetura
+## Backend
 
-O projeto adota conceitos de **Clean Architecture** e **Domain-Driven Design (DDD)**, dividindo as responsabilidades em camadas bem definidas:
+### Configurar e rodar
 
-*   `domain`: Entidades ricas (`Booking`, `Guest`, `Period`), Value Objects e exceções de negócio.
-*   `application` (Use Cases): Regras de orquestração (`BookingService`, `BookingUpdateService`, `GuestService`).
-*   `infrastructure`: Implementações de persistência (`GuestRepository`, `BookingRepository`), integrações externas e configurações de banco de dados.
-*   `presentation`: Controladores REST (APIs), DTOs de entrada/saída e validações (`AuthController`).
+```bash
+mvn spring-boot:run
+```
 
-## ⚙️ Como Executar
+O servidor sobe na porta `8080`. O banco de dados `hotel.db` é criado automaticamente na raiz do projeto na primeira execução.
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/leomsfreitas/HotelBookingSystem.git
-   ```
-2. Navegue até o diretório do projeto:
-   ```bash
-   cd HotelBookingSystem
-   ```
-3. Compile e rode os testes:
-   ```bash
-   ./mvnw clean test
-   ```
-4. Inicie a aplicação:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-   *(Substitua `./mvnw` por `./gradlew` caso esteja utilizando Gradle).*
+### Rodar os testes
 
-## 🧪 Testes e Qualidade (TDD)
+```bash
+mvn test
+```
 
-A qualidade do software é garantida através da prática de **Test-Driven Development (TDD)**. Todas as regras de negócio críticas (como transições de estado, validações temporais e verificações de conflito) foram construídas com testes automatizados prévios (Red -> Green -> Refactor), garantindo alta cobertura e confiabilidade do domínio.
+### Endpoints
+
+Todos os endpoints exigem autenticação via JWT, exceto os de registro e login.
+
+O token deve ser enviado no header:
+```
+Authorization: Bearer <token>
+```
+
+#### Autenticação
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/v1/register` | Cadastrar novo usuário |
+| POST | `/api/v1/authenticate` | Login — retorna o token JWT |
+
+Corpo do registro:
+```json
+{
+  "name": "João",
+  "lastname": "Silva",
+  "email": "joao@email.com",
+  "password": "senha123"
+}
+```
+
+Corpo do login:
+```json
+{
+  "username": "joao@email.com",
+  "password": "senha123"
+}
+```
+
+#### Hóspedes
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/v1/guests` | Listar hóspedes |
+| POST | `/api/v1/guests` | Cadastrar hóspede |
+
+#### Reservas
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/api/v1/bookings` | Listar todas as reservas |
+| GET | `/api/v1/bookings/{id}` | Buscar reserva por ID |
+| POST | `/api/v1/bookings` | Criar reserva |
+| PUT | `/api/v1/bookings/{id}` | Atualizar reserva |
+| PATCH | `/api/v1/bookings/{id}/cancel` | Cancelar reserva |
+| PATCH | `/api/v1/bookings/{id}/checkin` | Realizar check-in |
+| PATCH | `/api/v1/bookings/{id}/checkout` | Realizar check-out |
+
+Corpo para criar reserva:
+```json
+{
+  "guestId": "uuid-do-hospede",
+  "roomCategory": "STANDARD",
+  "checkIn": "2026-05-20",
+  "checkOut": "2026-05-25"
+}
+```
+
+Categorias disponíveis: `STANDARD`, `DELUXE`, `SUITE`.
+
+### Documentação interativa (Swagger)
+
+Com o backend rodando, acesse:
+```
+http://localhost:8080/api/v1/api-docs
+```
+
+---
+
+## Frontend
+
+### Configurar e rodar
+
+```bash
+cd frontend
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+Acesse em `http://localhost:5173`.
+
+O arquivo `.env.local` define o endereço do backend:
+```
+VITE_API_URL=http://localhost:8080
+```
+
+Para mais detalhes, consulte o [README do frontend](frontend/README.md).
+
+---
+
+## Rodar tudo junto
+
+```bash
+# Terminal 1 — backend
+mvn spring-boot:run
+
+# Terminal 2 — frontend
+cd frontend && npm run dev
+```
+
+Não há usuário padrão. Acesse `http://localhost:5173`, clique em "Criar conta" e cadastre-se para começar a usar o sistema.
