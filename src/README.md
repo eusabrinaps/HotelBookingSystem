@@ -34,4 +34,10 @@ mvn test
 
 ## Banco de dados
 
-O banco SQLite é criado automaticamente na raiz do projeto (`hotel.db`) na primeira vez que o backend sobe. O Hibernate gerencia o schema via `ddl-auto=update`.
+O banco SQLite (`hotel.db`) é criado automaticamente na raiz do projeto na primeira vez que o backend sobe. O Flyway executa a migration `V1_mock_data.sql` populando o banco com 7 hóspedes e 10 reservas de exemplo (nos status PENDING, CHECKED_IN, COMPLETED e CANCELLED).
+
+Credenciais de acesso:
+```
+Email: admin@hotel.com
+Senha: admin123
+```

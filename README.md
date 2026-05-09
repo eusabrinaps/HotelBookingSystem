@@ -30,7 +30,7 @@ HotelSystem/
 mvn spring-boot:run
 ```
 
-O servidor sobe na porta `8080`. O banco de dados `hotel.db` é criado automaticamente na raiz do projeto na primeira execução.
+O servidor sobe na porta `8080`. O banco de dados `hotel.db` é criado automaticamente na raiz do projeto na primeira execução. O Flyway executa automaticamente a migration `V1_mock_data.sql`, populando o banco com dados de exemplo.
 
 ### Rodar os testes
 
@@ -144,4 +144,9 @@ mvn spring-boot:run
 cd frontend && npm run dev
 ```
 
-Não há usuário padrão. Acesse `http://localhost:5173`, clique em "Criar conta" e cadastre-se para começar a usar o sistema.
+O banco já sobe com dados mockados. Use as credenciais abaixo para acessar:
+
+```
+Email: admin@hotel.com
+Senha: admin123
+```
