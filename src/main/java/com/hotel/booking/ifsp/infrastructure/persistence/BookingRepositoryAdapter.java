@@ -5,10 +5,12 @@ import com.hotel.booking.ifsp.domain.booking.BookingId;
 import com.hotel.booking.ifsp.domain.booking.BookingRepository;
 import com.hotel.booking.ifsp.domain.booking.Period;
 import com.hotel.booking.ifsp.domain.booking.BookingStatus;
+import com.hotel.booking.ifsp.config.RoomInventoryProperties;
 import com.hotel.booking.ifsp.domain.guest.GuestId;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class BookingRepositoryAdapter implements BookingRepository {
 
     private final JpaBookingRepositorySpring jpaRepository;
+    private final RoomInventoryProperties roomInventory;
 
     @Override
     public Booking save(Booking booking) {
@@ -28,21 +31,25 @@ public class BookingRepositoryAdapter implements BookingRepository {
     }
 
     @Override
+    @Transactional
     public Optional<Booking> findById(BookingId id) {
         return jpaRepository.findById(id.value()).map(this::toDomain);
     }
 
     @Override
+    @Transactional
     public boolean isRoomAvailable(RoomCategory roomCategory, Period period, BookingId excludeBookingId) {
-        return jpaRepository.isRoomAvailable(
+        long occupied = jpaRepository.countOverlappingBookings(
                 roomCategory,
                 period.checkIn(),
                 period.checkOut(),
                 excludeBookingId != null ? excludeBookingId.value() : null,
                 List.of(BookingStatus.CANCELLED)
         );
+        return occupied < roomInventory.getCountFor(roomCategory);
     }
 
+    @Transactional
     public List<Booking> findAll() {
         return jpaRepository.findAllByOrderByCheckInAsc()
                 .stream().map(this::toDomain).collect(Collectors.toList());

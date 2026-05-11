@@ -15,14 +15,14 @@ public interface JpaBookingRepositorySpring extends JpaRepository<BookingEntity,
     List<BookingEntity> findAllByOrderByCheckInAsc();
 
     @Query("""
-            SELECT COUNT(b) = 0 FROM BookingEntity b
+            SELECT COUNT(b) FROM BookingEntity b
             WHERE b.roomCategory = :category
               AND b.status NOT IN (:cancelled)
               AND (:excludeId IS NULL OR b.id <> :excludeId)
               AND b.checkIn < :checkOut
               AND b.checkOut > :checkIn
             """)
-    boolean isRoomAvailable(
+    long countOverlappingBookings(
             @Param("category") RoomCategory category,
             @Param("checkIn") LocalDate checkIn,
             @Param("checkOut") LocalDate checkOut,
