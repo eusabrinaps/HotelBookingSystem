@@ -6,6 +6,7 @@ import com.hotel.booking.ifsp.domain.guest.GuestId;
 import com.hotel.booking.ifsp.domain.guest.GuestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class GuestRepositoryAdapter implements GuestRepository {
     private final JpaGuestRepositorySpring jpaRepository;
 
     @Override
+    @Transactional
     public Optional<Guest> findById(GuestId id) {
         return jpaRepository.findById(id.value()).map(this::toDomain);
     }
@@ -29,10 +31,12 @@ public class GuestRepositoryAdapter implements GuestRepository {
         return toDomain(saved);
     }
 
+    @Transactional
     public List<Guest> findAll() {
         return jpaRepository.findAll().stream().map(this::toDomain).collect(Collectors.toList());
     }
 
+    @Transactional
     public Optional<Guest> findByCpf(String cpf) {
         return jpaRepository.findByCpf(cpf).map(this::toDomain);
     }
