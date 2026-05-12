@@ -3,6 +3,7 @@ package com.hotel.booking.ifsp.domain.booking;
 import com.hotel.booking.ifsp.domain.guest.GuestId;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -212,4 +213,27 @@ class BookingTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot update a booking that is already checked-in");
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should reconstitute booking with provided values")
+    void shouldReconstituteBookingWithProvidedValues() {
+        BookingId id = BookingId.generate();
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        RoomCategory category = RoomCategory.DELUXE;
+        Period period = new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(5));
+        BigDecimal totalValue = new BigDecimal("1000.00");
+        BookingStatus status = BookingStatus.PENDING;
+
+        Booking booking = Booking.reconstitute(id, guestId, category, period, totalValue, status);
+
+        assertThat(booking.getId()).isEqualTo(id);
+        assertThat(booking.getGuestId()).isEqualTo(guestId);
+        assertThat(booking.getRoomCategory()).isEqualTo(category);
+        assertThat(booking.getPeriod()).isEqualTo(period);
+        assertThat(booking.getTotalValue()).isEqualTo(totalValue);
+        assertThat(booking.getStatus()).isEqualTo(status);
+    }
+
 }
