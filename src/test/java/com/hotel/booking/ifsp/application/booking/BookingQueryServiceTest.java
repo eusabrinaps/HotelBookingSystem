@@ -6,6 +6,7 @@ import com.hotel.booking.ifsp.domain.booking.BookingRepository;
 import com.hotel.booking.ifsp.domain.booking.BookingStatus;
 import com.hotel.booking.ifsp.domain.booking.Period;
 import com.hotel.booking.ifsp.domain.exception.BookingNotFoundException;
+import com.hotel.booking.ifsp.domain.exception.GuestNotFoundException;
 import com.hotel.booking.ifsp.domain.guest.CPF;
 import com.hotel.booking.ifsp.domain.guest.Guest;
 import com.hotel.booking.ifsp.domain.guest.GuestId;
@@ -13,6 +14,7 @@ import com.hotel.booking.ifsp.domain.guest.GuestRepository;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -137,6 +139,23 @@ class BookingQueryServiceTest {
         BookingDetails result = bookingQueryService.findBooking(booking.getId());
 
         assertThat(result.status()).isEqualTo(BookingStatus.COMPLETED);
+    }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should throw GuestNotFoundException when guest does not exist")
+    void shouldThrowExceptionWhenGuestNotFound() {
+        BookingId bookingId = BookingId.generate();
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        Period period = new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(5));
+        Booking booking = Booking.create(guestId, RoomCategory.STANDARD, period);
+
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        when(guestRepository.findById(guestId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingQueryService.findBooking(bookingId))
+                .isInstanceOf(GuestNotFoundException.class);
     }
 
 }
