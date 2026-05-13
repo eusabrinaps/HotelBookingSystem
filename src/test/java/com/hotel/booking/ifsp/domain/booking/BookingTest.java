@@ -258,7 +258,7 @@ class BookingTest {
     @Test
     @Tag("Structural")
     @Tag("UnitTest")
-    @DisplayName("Should throw when checking in a non-pending booking")
+    @DisplayName("Should throw IllegalStateException when checking in a non-pending booking")
     void shouldThrowWhenCheckingInNonPendingBooking() {
         Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
                 new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));

@@ -40,4 +40,16 @@ class PeriodTest {
         assertThatCode(() -> new Period(checkIn, checkOut))
                 .doesNotThrowAnyException();
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should return number of days between check-in and check-out")
+    void shouldReturnNumberOfDaysBetweenCheckInAndCheckOut() {
+        LocalDate checkIn = LocalDate.now();
+        LocalDate checkOut = checkIn.plusDays(5);
+        Period period = new Period(checkIn, checkOut);
+
+        assertThat(period.numberOfDays()).isEqualTo(5);
+    }
 }
