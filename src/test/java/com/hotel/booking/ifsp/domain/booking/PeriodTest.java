@@ -68,4 +68,16 @@ class PeriodTest {
 
         assertThat(period1.overlapsWith(period2)).isTrue();
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should return false when check-in is on or after other check-out")
+    void shouldReturnFalseWhenCheckInIsOnOrAfterOtherCheckOut() {
+        LocalDate today = LocalDate.now();
+        Period period1 = new Period(today.plusDays(10), today.plusDays(12));
+        Period period2 = new Period(today.plusDays(1), today.plusDays(9));
+
+        assertThat(period1.overlapsWith(period2)).isFalse();
+    }
 }
