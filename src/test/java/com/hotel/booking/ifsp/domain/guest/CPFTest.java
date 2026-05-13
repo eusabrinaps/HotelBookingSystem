@@ -41,10 +41,20 @@ class CPFTest {
     @Test
     @Tag("Structural")
     @Tag("UnitTest")
-    @DisplayName("Should throw when CPF length is invalid")
+    @DisplayName("Should throw when IllegalArgumentException CPF length is invalid")
     void shouldThrowWhenCpfLengthIsInvalid() {
         assertThatThrownBy(() -> new CPF("123"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid CPF: 123");
+    }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should throw IllegalArgumentException when first check digit is invalid")
+    void shouldThrowWhenFirstCheckDigitIsInvalid() {
+        assertThatThrownBy(() -> new CPF("52998224735"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid CPF: 52998224735");
     }
 }
