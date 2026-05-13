@@ -52,4 +52,20 @@ class PeriodTest {
 
         assertThat(period.numberOfDays()).isEqualTo(5);
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should return true when periods overlap")
+    void shouldReturnTrueWhenPeriodsOverlap() {
+        LocalDate checkIn1 = LocalDate.now().plusDays(1);
+        LocalDate checkOut1 = LocalDate.now().plusDays(5);
+        Period period1 = new Period(checkIn1, checkOut1);
+
+        LocalDate checkIn2 = LocalDate.now().plusDays(3);
+        LocalDate checkOut2 = LocalDate.now().plusDays(7);
+        Period period2 = new Period(checkIn2, checkOut2);
+
+        assertThat(period1.overlapsWith(period2)).isTrue();
+    }
 }
