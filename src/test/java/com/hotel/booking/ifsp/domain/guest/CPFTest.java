@@ -37,4 +37,14 @@ class CPFTest {
         assertThatCode(() -> new CPF("529.982.247-25"))
                 .doesNotThrowAnyException();
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should throw when CPF length is invalid")
+    void shouldThrowWhenCpfLengthIsInvalid() {
+        assertThatThrownBy(() -> new CPF("123"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid CPF: 123");
+    }
 }
