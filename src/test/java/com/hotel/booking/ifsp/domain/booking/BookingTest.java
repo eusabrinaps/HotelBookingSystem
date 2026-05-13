@@ -255,4 +255,18 @@ class BookingTest {
                 .hasMessage("Cannot update a completed booking");
     }
 
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should throw when checking in a non-pending booking")
+    void shouldThrowWhenCheckingInNonPendingBooking() {
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+        booking.cancel();
+
+        assertThatThrownBy(booking::checkIn)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Can only check-in a pending booking");
+    }
+
 }
