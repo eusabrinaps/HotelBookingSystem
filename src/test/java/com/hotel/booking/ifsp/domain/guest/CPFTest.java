@@ -68,4 +68,15 @@ class CPFTest {
 
         assertThat(cpf.value()).isEqualTo(validValue);
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should return value on toString")
+    void shouldReturnValueOnToString() {
+        String validValue = "52998224725";
+        CPF cpf = new CPF(validValue);
+
+        assertThat(cpf.toString()).isEqualTo(validValue);
+    }
 }
