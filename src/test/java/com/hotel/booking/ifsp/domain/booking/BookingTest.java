@@ -236,4 +236,23 @@ class BookingTest {
         assertThat(booking.getStatus()).isEqualTo(status);
     }
 
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should throw IllegalStateException when trying to update a completed booking")
+    void shouldThrowWhenUpdatingCompletedBooking() {
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        Period period = new Period(LocalDate.now(), LocalDate.now().plusDays(2));
+        Booking booking = Booking.create(guestId, RoomCategory.STANDARD, period);
+
+        booking.checkIn();
+        booking.complete();
+
+        Period newPeriod = new Period(LocalDate.now().plusDays(5), LocalDate.now().plusDays(7));
+
+        assertThatThrownBy(() -> booking.update(RoomCategory.DELUXE, newPeriod))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot update a completed booking");
+    }
+
 }
