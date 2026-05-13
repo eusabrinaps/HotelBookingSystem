@@ -57,4 +57,15 @@ class CPFTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid CPF: 52998224735");
     }
+
+    @Test
+    @Tag("Structural")
+    @Tag("UnitTest")
+    @DisplayName("Should accept CPF when second check digit resets to zero")
+    void shouldAcceptCpfWhenSecondCheckDigitResetsToZero() {
+        String validValue = "10000000280";
+        CPF cpf = new CPF(validValue);
+
+        assertThat(cpf.value()).isEqualTo(validValue);
+    }
 }
