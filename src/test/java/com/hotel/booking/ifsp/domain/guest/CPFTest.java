@@ -100,4 +100,13 @@ class CPFTest {
         CPF cpf = new CPF(cpfValue);
         assertThat(cpf.toString()).isEqualTo(cpfValue);
     }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    @DisplayName("Should reject CPF when first check digit is wrong even if second matches")
+    void shouldRejectCpfWhenFirstDigitIsWrongButSecondMatches() {
+        assertThatThrownBy(() -> new CPF("00000000019"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
