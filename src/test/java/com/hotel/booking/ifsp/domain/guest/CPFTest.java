@@ -79,4 +79,15 @@ class CPFTest {
 
         assertThat(cpf.toString()).isEqualTo(validValue);
     }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    @DisplayName("Should accept CPF when first check digit resets to zero")
+    void shouldAcceptCpfWhenFirstCheckDigitResetsToZero() {
+        String validValue = "10000000108";
+        CPF cpf = new CPF(validValue);
+
+        assertThat(cpf.toString()).isEqualTo(validValue);
+    }
 }
