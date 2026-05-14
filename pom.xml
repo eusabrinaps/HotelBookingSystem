@@ -168,6 +168,9 @@
                         <param>HTML</param>
                         <param>XML</param>
                     </outputFormats>
+                    <mutators>
+                        <mutator>STRONGER</mutator>
+                    </mutators>
                 </configuration>
             </plugin>
         </plugins>

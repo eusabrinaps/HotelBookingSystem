@@ -80,4 +80,16 @@ class PeriodTest {
 
         assertThat(period1.overlapsWith(period2)).isFalse();
     }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    @DisplayName("Should not overlap when check-out equals other check-in")
+    void shouldNotOverlapWhenCheckoutEqualsOtherCheckin() {
+        Period first = new Period(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 5));
+        Period second = new Period(LocalDate.of(2024, 1, 5), LocalDate.of(2024, 1, 10));
+
+        assertThat(first.overlapsWith(second)).isFalse();
+        assertThat(second.overlapsWith(first)).isFalse();
+    }
 }
