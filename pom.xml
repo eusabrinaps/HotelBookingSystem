@@ -150,11 +150,20 @@
                 </dependencies>
                 <configuration>
                     <targetClasses>
-                        <param>com.hotel.booking.ifsp.*</param>
+                        <param>com.hotel.booking.ifsp.application.booking.BookingCancelService</param>
+                        <param>com.hotel.booking.ifsp.application.booking.BookingCheckInOutService</param>
+                        <param>com.hotel.booking.ifsp.application.booking.BookingQueryService</param>
+                        <param>com.hotel.booking.ifsp.application.booking.BookingService</param>
+                        <param>com.hotel.booking.ifsp.application.booking.BookingUpdateService</param>
+                        <param>com.hotel.booking.ifsp.domain.booking.Booking</param>
+                        <param>com.hotel.booking.ifsp.domain.booking.Period</param>
+                        <param>com.hotel.booking.ifsp.domain.guest.CPF</param>
                     </targetClasses>
+
                     <targetTests>
                         <param>com.hotel.booking.ifsp.*</param>
                     </targetTests>
+
                     <outputFormats>
                         <param>HTML</param>
                         <param>XML</param>
