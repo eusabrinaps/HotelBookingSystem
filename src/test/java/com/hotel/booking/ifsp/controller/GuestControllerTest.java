@@ -42,4 +42,20 @@ class GuestControllerTest extends ApiIntegrationTestBase {
                 .when().get("/api/v1/guests")
                 .then().statusCode(401);
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /guests with valid data returns 201 and guest body")
+    void CreateGuestWithValidDataReturns201AndGuestBody() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(Map.of("name", "Linus Torvalds", "cpf", "529.982.247-25"))
+                .when().post("/api/v1/guests")
+                .then().statusCode(201)
+                .body("id", notNullValue())
+                .body("name", equalTo("Linus Torvalds"))
+                .body("cpf", equalTo("529.982.247-25"));
+    }
 }
