@@ -97,4 +97,17 @@ class LoginPageUiTest extends UiTestBase {
         assertThat(page.isErrorDisplayed()).isTrue();
         assertThat(page.getErrorMessage()).isEqualTo("A senha deve ter pelo menos 6 caracteres.");
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Register with duplicate email shows error message")
+    void RegisterWithDuplicateEmailShowsErrorMessage() {
+        LoginPage page = new LoginPage(driver);
+        page.switchToRegisterTab();
+        page.register("Admin", "Hotel", "admin@hotel.com",
+                "senha123", "senha123");
+
+        assertThat(page.isErrorDisplayed()).isTrue();
+        assertThat(page.getErrorMessage()).isEqualTo("Este e-mail já está cadastrado.");
+    }
 }
