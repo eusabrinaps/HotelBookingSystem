@@ -84,4 +84,17 @@ class GuestControllerTest extends ApiIntegrationTestBase {
                 .when().post("/api/v1/guests")
                 .then().statusCode(400);
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /guests with duplicate CPF returns 409") // TODO: Abrir issue como bug
+    void CreateGuestWithDuplicateCpfReturns409() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(Map.of("name", "Roberto Carlos", "cpf", "123.456.789-09"))
+                .when().post("/api/v1/guests")
+                .then().statusCode(409);
+    }
 }
