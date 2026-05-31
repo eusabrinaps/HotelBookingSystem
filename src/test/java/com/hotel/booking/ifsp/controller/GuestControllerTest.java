@@ -97,4 +97,16 @@ class GuestControllerTest extends ApiIntegrationTestBase {
                 .when().post("/api/v1/guests")
                 .then().statusCode(409);
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /guests without token returns 401")
+    void CreateGuestWithoutTokenReturns401() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of("name", "Roberto Carlos", "cpf", "529.982.247-25"))
+                .when().post("/api/v1/guests")
+                .then().statusCode(401);
+    }
 }
