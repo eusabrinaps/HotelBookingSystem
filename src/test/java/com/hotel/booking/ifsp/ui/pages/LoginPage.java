@@ -75,4 +75,14 @@ public class LoginPage {
     public boolean isOnRegisterTab() {
         return !driver.findElements(By.xpath("//h1[contains(text(),'Criar conta')]")).isEmpty();
     }
+
+    // O app não usa React Router — após login a Sidebar aparece com os itens de navegação
+    public boolean isLoginSuccessful() {
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("aside")));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
