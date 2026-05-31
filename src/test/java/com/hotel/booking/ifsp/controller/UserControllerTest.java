@@ -32,7 +32,7 @@ class UserControllerTest extends ApiIntegrationTestBase {
     @Tag("ApiTest")
     @Tag("IntegrationTest")
     @DisplayName("POST /register with valid data returns 201 and user id")
-    void register_withValidData_returns201AndUserId() {
+    void RegisterWithValidDataReturns201AndUserId() {
         given()
                 .contentType(ContentType.JSON)
                 .body(Map.of(
@@ -44,5 +44,24 @@ class UserControllerTest extends ApiIntegrationTestBase {
                 .when().post("/api/v1/register")
                 .then().statusCode(201)
                 .body("id", notNullValue());
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /register with duplicate email returns 409")
+    void RegisterWithDuplicateEmailReturns409() {
+        // admin@hotel.com existe no banco pela migração
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "name", "Admin",
+                        "lastname", "Dup",
+                        "email", ADMIN_EMAIL,
+                        "password", "qualquerUma"
+                ))
+                .when().post("/api/v1/register")
+                .then().statusCode(409)
+                .body("message", notNullValue());
     }
 }
