@@ -77,4 +77,16 @@ class UserControllerTest extends ApiIntegrationTestBase {
                 .then().statusCode(200)
                 .body("token", notNullValue());
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /authenticate with wrong password returns 401")
+    void AuthenticateWithWrongPasswordReturns401() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of("username", ADMIN_EMAIL, "password", "LoginComSenhaErrada"))
+                .when().post("/api/v1/authenticate")
+                .then().statusCode(401);
+    }
 }
