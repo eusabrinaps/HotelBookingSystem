@@ -71,4 +71,17 @@ class GuestControllerTest extends ApiIntegrationTestBase {
                 .when().post("/api/v1/guests")
                 .then().statusCode(400);
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /guests with blank name returns 400")
+    void CreateGuestWithBlankNameReturns400() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(Map.of("name", " ", "cpf", "529.982.247-25"))
+                .when().post("/api/v1/guests")
+                .then().statusCode(400);
+    }
 }
