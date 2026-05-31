@@ -14,6 +14,15 @@ class LoginPageUiTest extends UiTestBase {
 
     @Test
     @Tag("UiTest")
+    @DisplayName("Page loads on login tab by default")
+    void PageLoadsOnLoginTabByDefault() {
+        LoginPage page = new LoginPage(driver);
+
+        assertThat(page.isOnLoginTab()).isTrue();
+    }
+
+    @Test
+    @Tag("UiTest")
     @DisplayName("Login with valid credentials shows dashboard sidebar")
     void LoginWithValidCredentialsShowsDashboardSidebar() {
         LoginPage page = new LoginPage(driver);
