@@ -84,4 +84,17 @@ class LoginPageUiTest extends UiTestBase {
         assertThat(page.isErrorDisplayed()).isTrue();
         assertThat(page.getErrorMessage()).isEqualTo("As senhas não coincidem.");
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Register with short password shows error message")
+    void RegisterWithShortPasswordShowsErrorMessage() {
+        LoginPage page = new LoginPage(driver);
+        page.switchToRegisterTab();
+        page.register("Ana", "Lima", "ana.lima@test.com",
+                "abc", "abc");
+
+        assertThat(page.isErrorDisplayed()).isTrue();
+        assertThat(page.getErrorMessage()).isEqualTo("A senha deve ter pelo menos 6 caracteres.");
+    }
 }
