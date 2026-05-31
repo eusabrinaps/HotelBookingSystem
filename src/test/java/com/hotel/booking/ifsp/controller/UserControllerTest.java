@@ -89,4 +89,16 @@ class UserControllerTest extends ApiIntegrationTestBase {
                 .when().post("/api/v1/authenticate")
                 .then().statusCode(401);
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /authenticate with unknown email returns 401")
+    void AuthenticateWithUnknownEmailReturns401() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of("username", "naoexiste@test.com", "password", "qualquerUma"))
+                .when().post("/api/v1/authenticate")
+                .then().statusCode(401);
+    }
 }
