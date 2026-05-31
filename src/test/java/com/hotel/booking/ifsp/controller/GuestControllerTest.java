@@ -32,4 +32,14 @@ class GuestControllerTest extends ApiIntegrationTestBase {
                 .body("[0].name", notNullValue())
                 .body("[0].cpf", notNullValue());
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("GET /guests without token returns 401")
+    void ListGuestsWithoutTokenReturns401() {
+        given()
+                .when().get("/api/v1/guests")
+                .then().statusCode(401);
+    }
 }
