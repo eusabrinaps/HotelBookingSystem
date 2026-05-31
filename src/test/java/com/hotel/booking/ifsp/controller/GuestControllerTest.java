@@ -58,4 +58,17 @@ class GuestControllerTest extends ApiIntegrationTestBase {
                 .body("name", equalTo("Linus Torvalds"))
                 .body("cpf", equalTo("529.982.247-25"));
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /guests with invalid CPF returns 400")
+    void CreateGuestWithInvalidCpfReturns400() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(Map.of("name", "Teste", "cpf", "123.456.789-00"))
+                .when().post("/api/v1/guests")
+                .then().statusCode(400);
+    }
 }
