@@ -1,6 +1,7 @@
 package com.hotel.booking.ifsp.ui;
 
 import com.hotel.booking.ifsp.ui.pages.LoginPage;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -121,5 +122,21 @@ class LoginPageUiTest extends UiTestBase {
                 "senha123", "senha123");
 
         assertThat(page.isOnRegisterTab()).isTrue();
+    }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Register with valid data navigates to dashboard")
+    void RegisterWithValidDataNavigatesToDashboard() {
+        Faker faker = new Faker();
+        String email = faker.internet().emailAddress();
+        String name = faker.name().firstName();
+        String lastname = faker.name().lastName();
+
+        LoginPage page = new LoginPage(driver);
+        page.switchToRegisterTab();
+        page.register(name, lastname, email, "senha123", "senha123");
+
+        assertThat(page.isLoginSuccessful()).isTrue();
     }
 }
