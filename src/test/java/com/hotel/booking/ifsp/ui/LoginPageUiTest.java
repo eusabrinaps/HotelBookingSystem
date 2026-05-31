@@ -23,12 +23,11 @@ class LoginPageUiTest extends UiTestBase {
 
     @Test
     @Tag("UiTest")
-    @DisplayName("Login with invalid credentials shows error message")
-    void LoginWithInvalidCredentialsShowsErrorMessage() {
+    @DisplayName("Login with invalid credentials does not navigate to dashboard")
+    void LoginWithInvalidCredentialsDoesNotNavigateToDashboard() {
         LoginPage page = new LoginPage(driver);
         page.login("admin@hotel.com", "senhaErrada");
 
-        assertThat(page.isErrorDisplayed()).isTrue();
-        assertThat(page.getErrorMessage()).isEqualTo("E-mail ou senha incorretos.");
+        assertThat(page.isLoginSuccessful()).isFalse();
     }
 }

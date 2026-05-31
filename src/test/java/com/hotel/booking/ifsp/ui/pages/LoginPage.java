@@ -62,8 +62,9 @@ public class LoginPage {
 
     public boolean isErrorDisplayed() {
         try {
-            return driver.findElement(ERROR_MESSAGE).isDisplayed();
-        } catch (NoSuchElementException e) {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(ERROR_MESSAGE));
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
