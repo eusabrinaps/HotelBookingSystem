@@ -71,4 +71,17 @@ class LoginPageUiTest extends UiTestBase {
 
         assertThat(page.isOnLoginTab()).isTrue();
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Register with mismatched passwords shows error message")
+    void RegisterWithMismatchedPasswordsShowsErrorMessage() {
+        LoginPage page = new LoginPage(driver);
+        page.switchToRegisterTab();
+        page.register("Ana", "Lima", "ana.lima@test.com",
+                "senha123", "senha456");
+
+        assertThat(page.isErrorDisplayed()).isTrue();
+        assertThat(page.getErrorMessage()).isEqualTo("As senhas não coincidem.");
+    }
 }
