@@ -64,4 +64,17 @@ class UserControllerTest extends ApiIntegrationTestBase {
                 .then().statusCode(409)
                 .body("message", notNullValue());
     }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /authenticate with valid credentials returns 200 and JWT token")
+    void AuthenticateWithValidCredentialsReturns200AndToken() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(Map.of("username", ADMIN_EMAIL, "password", ADMIN_PASSWORD))
+                .when().post("/api/v1/authenticate")
+                .then().statusCode(200)
+                .body("token", notNullValue());
+    }
 }
