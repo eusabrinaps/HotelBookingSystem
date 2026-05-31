@@ -40,4 +40,14 @@ class LoginPageUiTest extends UiTestBase {
 
         assertThat(page.isOnLoginTab()).isTrue();
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Login with blank password stays on login page")
+    void LoginWithBlankPasswordStaysOnLoginPage() {
+        LoginPage page = new LoginPage(driver);
+        page.login("admin@hotel.com", "");
+
+        assertThat(page.isOnLoginTab()).isTrue();
+    }
 }
