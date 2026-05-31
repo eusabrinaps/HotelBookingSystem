@@ -110,4 +110,16 @@ class LoginPageUiTest extends UiTestBase {
         assertThat(page.isErrorDisplayed()).isTrue();
         assertThat(page.getErrorMessage()).isEqualTo("Este e-mail já está cadastrado.");
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Register with blank name stays on register page")
+    void RegisterWithBlankNameStaysOnRegisterPage() {
+        LoginPage page = new LoginPage(driver);
+        page.switchToRegisterTab();
+        page.register("", "Lima", "ana.lima@test.com",
+                "senha123", "senha123");
+
+        assertThat(page.isOnRegisterTab()).isTrue();
+    }
 }
