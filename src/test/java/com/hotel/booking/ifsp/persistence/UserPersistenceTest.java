@@ -29,4 +29,14 @@ class UserPersistenceTest extends PersistenceIntegrationTestBase {
         assertEquals("admin@hotel.com", obtained.get().getEmail());
         assertEquals("Admin", obtained.get().getName());
     }
+
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("findByEmail with non-existing email returns empty")
+    void FindByEmailWithNonExistingEmailReturnsEmpty() {
+        var obtained = userRepository.findByEmail("ViriginiaNaCPIDasBets@test.com");
+
+        assertThat(obtained).isEmpty();
+    }
 }
