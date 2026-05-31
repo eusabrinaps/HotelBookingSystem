@@ -60,4 +60,15 @@ class LoginPageUiTest extends UiTestBase {
 
         assertThat(page.isOnRegisterTab()).isTrue();
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Switching back to login tab shows login form")
+    void SwitchingBackToLoginTabShowsLoginForm() {
+        LoginPage page = new LoginPage(driver);
+        page.switchToRegisterTab();
+        page.switchToLoginTab();
+
+        assertThat(page.isOnLoginTab()).isTrue();
+    }
 }
