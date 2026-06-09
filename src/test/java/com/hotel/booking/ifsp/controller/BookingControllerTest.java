@@ -4,6 +4,7 @@ import com.hotel.booking.ifsp.domain.booking.BookingStatus;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import com.hotel.booking.ifsp.infrastructure.persistence.BookingEntity;
 import com.hotel.booking.ifsp.infrastructure.persistence.JpaBookingRepositorySpring;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -109,6 +111,34 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .then()
                 .statusCode(404)
                 .body("message", notNullValue());
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings with valid payload returns 201 and booking id")
+    void shouldCreateBookingAndReturnBookingId() {
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().plusDays(20).toString(),
+                "checkOut", LocalDate.now().plusDays(22).toString()
+        );
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(201)
+                .body(notNullValue())
+                .extract()
+                .response();
+
+        UUID bookingId = extractUuid(response);
+        createdBookingIds.add(bookingId);
     }
 
     private UUID createBooking(
