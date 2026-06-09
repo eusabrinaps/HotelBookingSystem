@@ -180,6 +180,34 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .body("status", equalTo("PENDING"));
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/cancel with pending booking returns 204 and cancels booking")
+    void shouldCancelBookingAndReturnNoContent() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(12),
+                BookingStatus.PENDING
+        );
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/cancel", bookingId)
+                .then()
+                .statusCode(204);
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .get("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("CANCELLED"));
+    }
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
