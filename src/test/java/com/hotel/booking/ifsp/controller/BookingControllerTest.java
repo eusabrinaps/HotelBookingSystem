@@ -1,12 +1,19 @@
 package com.hotel.booking.ifsp.controller;
 
+import com.hotel.booking.ifsp.domain.booking.BookingStatus;
+import com.hotel.booking.ifsp.domain.room.RoomCategory;
+import com.hotel.booking.ifsp.infrastructure.persistence.BookingEntity;
 import com.hotel.booking.ifsp.infrastructure.persistence.JpaBookingRepositorySpring;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +23,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.greaterThan;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 @DisplayName("BookingController API Tests")
 class BookingControllerTest extends ApiIntegrationTestBase {
@@ -55,5 +64,65 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .body("[0].checkOut", notNullValue())
                 .body("[0].totalValue", notNullValue())
                 .body("[0].status", notNullValue());
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("GET /bookings/{id} with existing id returns 200 and booking payload")
+    void shouldFindBookingByIdAndReturnBookingPayload() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(12),
+                BookingStatus.PENDING
+        );
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .get("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(bookingId.toString()))
+                .body("guestId", equalTo(GUEST_ID.toString()))
+                .body("guestName", notNullValue())
+                .body("guestCpf", notNullValue())
+                .body("roomCategory", equalTo("STANDARD"))
+                .body("checkIn", equalTo(LocalDate.now().plusDays(10).toString()))
+                .body("checkOut", equalTo(LocalDate.now().plusDays(12).toString()))
+                .body("totalValue", notNullValue())
+                .body("status", equalTo("PENDING"));
+    }
+
+    private UUID createBooking(
+            RoomCategory roomCategory,
+            LocalDate checkIn,
+            LocalDate checkOut,
+            BookingStatus status
+    ) {
+        UUID bookingId = UUID.randomUUID();
+
+        long numberOfDays = ChronoUnit.DAYS.between(checkIn, checkOut);
+
+        BookingEntity booking = BookingEntity.builder()
+                .id(bookingId)
+                .guestId(GUEST_ID)
+                .roomCategory(roomCategory)
+                .checkIn(checkIn)
+                .checkOut(checkOut)
+                .totalValue(roomCategory.getDailyRate().multiply(BigDecimal.valueOf(numberOfDays)))
+                .status(status)
+                .build();
+
+        bookingRepository.save(booking);
+        createdBookingIds.add(bookingId);
+
+        return bookingId;
+    }
+
+    private UUID extractUuid(Response response) {
+        String rawBody = response.asString().replace("\"", "").trim();
+        return UUID.fromString(rawBody);
     }
 }
