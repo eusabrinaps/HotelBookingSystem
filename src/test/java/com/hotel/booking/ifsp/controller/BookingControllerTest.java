@@ -21,11 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.greaterThan;
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("BookingController API Tests")
@@ -206,6 +203,49 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .then()
                 .statusCode(200)
                 .body("status", equalTo("CANCELLED"));
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/checkin and checkout updates booking status")
+    void shouldCheckinAndCheckoutBooking() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(2),
+                BookingStatus.PENDING
+        );
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/checkin", bookingId)
+                .then()
+                .statusCode(204);
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .get("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("CHECKED_IN"));
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/checkout", bookingId)
+                .then()
+                .statusCode(204);
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .get("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("COMPLETED"));
     }
 
     private UUID createBooking(
