@@ -95,6 +95,22 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .body("status", equalTo("PENDING"));
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("GET /bookings/{id} with unknown id returns 404")
+    void shouldReturnNotFoundWhenBookingDoesNotExist() {
+        UUID unknownBookingId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .get("/api/v1/bookings/{id}", unknownBookingId)
+                .then()
+                .statusCode(404)
+                .body("message", notNullValue());
+    }
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
