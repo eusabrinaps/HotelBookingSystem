@@ -141,6 +141,45 @@ class BookingControllerTest extends ApiIntegrationTestBase {
         createdBookingIds.add(bookingId);
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PUT /bookings/{id} with valid payload returns 204 and updates booking")
+    void shouldUpdateBookingAndReturnNoContent() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(12),
+                BookingStatus.PENDING
+        );
+
+        Map<String, Object> body = Map.of(
+                "roomCategory", "DELUXE",
+                "checkIn", LocalDate.now().plusDays(30).toString(),
+                "checkOut", LocalDate.now().plusDays(33).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .put("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(204);
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .get("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(200)
+                .body("roomCategory", equalTo("DELUXE"))
+                .body("checkIn", equalTo(LocalDate.now().plusDays(30).toString()))
+                .body("checkOut", equalTo(LocalDate.now().plusDays(33).toString()))
+                .body("status", equalTo("PENDING"));
+    }
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
