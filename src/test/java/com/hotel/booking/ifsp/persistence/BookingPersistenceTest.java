@@ -113,6 +113,30 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
         assertThat(result).isZero();
     }
 
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("countOverlappingBookings ignores excluded booking")
+    void shouldIgnoreExcludedBookingInOverlapCount() {
+        BookingEntity booking = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 4, 10),
+                LocalDate.of(2025, 4, 15),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.save(booking);
+
+        long result = countOverlappingBookings(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 4, 12),
+                LocalDate.of(2025, 4, 14),
+                booking.getId()
+        );
+
+        assertThat(result).isZero();
+    }
+
     private long countOverlappingBookings(
             RoomCategory roomCategory,
             LocalDate checkIn,
