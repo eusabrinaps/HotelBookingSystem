@@ -26,5 +26,8 @@ public class BookingsPage extends BasePage {
         type(searchInput, text);
     }
 
-
+    public boolean isBookingVisible(String guestName) {
+        By row = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]");
+        return isVisible(row);
+    }
 }
