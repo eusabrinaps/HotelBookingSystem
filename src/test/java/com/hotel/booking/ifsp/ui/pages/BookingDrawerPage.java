@@ -14,6 +14,7 @@ public class BookingDrawerPage extends BasePage {
     private static final By CHECKOUT_INPUT = By.xpath("(//input[@type='date'])[2]");
     private static final By CONFIRM_BUTTON = By.xpath("//button[normalize-space()='Confirmar reserva']");
     private static final By CLOSE_BUTTON = By.xpath("//h2[normalize-space()='Nova Reserva']/ancestor::div[contains(@class,'fixed')]//button[.//*[name()='svg']][1]");
+    private static final By TOAST = By.cssSelector("div.fixed.bottom-6.right-6");
 
     public BookingDrawerPage(WebDriver driver) {
         super(driver);
@@ -62,5 +63,13 @@ public class BookingDrawerPage extends BasePage {
     public boolean isToastVisibleContaining(String text) {
         By toast = By.xpath("//div[contains(@class,'fixed') and contains(normalize-space(.),'" + text + "')]");
         return isVisible(toast);
+    }
+
+    public boolean isAnyToastVisible() {
+        return isVisible(TOAST);
+    }
+
+    public void waitToastDisappear() {
+        waitInvisible(TOAST);
     }
 }

@@ -49,4 +49,8 @@ public abstract class BasePage {
             return false;
         }
     }
+
+    protected void waitInvisible(By locator) {
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+    }
 }
