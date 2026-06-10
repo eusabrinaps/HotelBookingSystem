@@ -375,7 +375,27 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .statusCode(404);
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PUT /bookings with unknown id returns 404")
+    void shouldReturn404WhenUpdatingUnknownBooking() {
 
+        Map<String, Object> body = Map.of(
+                "roomCategory", "DELUXE",
+                "checkIn", LocalDate.now().plusDays(30).toString(),
+                "checkOut", LocalDate.now().plusDays(33).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .put("/api/v1/bookings/{id}", UNKNOWN_BOOKING_ID)
+                .then()
+                .statusCode(404);
+    }
 
     private UUID createBooking(
             RoomCategory roomCategory,
