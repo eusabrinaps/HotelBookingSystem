@@ -30,4 +30,9 @@ public class BookingsPage extends BasePage {
         By row = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]");
         return isVisible(row);
     }
+
+    public void clickViewDetails(String guestName) {
+        By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Ver detalhes']");
+        click(btn);
+    }
 }
