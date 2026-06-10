@@ -329,6 +329,28 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .statusCode(400);
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bokings with invalid room category returns 400")
+    void shouldReturn400WhenRoomCategoryIsInvalid() {
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "INVALID",
+                "checkIn", LocalDate.now().plusDays(20).toString(),
+                "checkOut", LocalDate.now().plusDays(22).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(400);
+    }
 
 
     private UUID createBooking(
