@@ -52,6 +52,25 @@ public class ValidationAndResponsiveUiTest extends UiTestBase {
         assertThat(drawerPage.isOpen()).isTrue();
     }
 
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Booking form rejects checkout before checkin")
+    void shouldRejectCheckoutBeforeCheckin() {
+        BookingsPage bookingsPage = loginAndGoToBookings();
+
+        BookingDrawerPage drawerPage = bookingsPage.openNewBookingDrawer();
+        assertThat(drawerPage.isOpen()).isTrue();
+
+        drawerPage.fillGuestName(faker.name().fullName());
+        drawerPage.fillCpf("529.982.247-25");
+        drawerPage.selectStandardRoom();
+        drawerPage.fillCheckIn(LocalDate.now().plusDays(30));
+        drawerPage.fillCheckOut(LocalDate.now().plusDays(29));
+        drawerPage.confirmReservation();
+
+        assertThat(drawerPage.isOpen()).isTrue();
+    }
+
     private BookingsPage loginAndGoToBookings() {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("admin@hotel.com", "admin123");
