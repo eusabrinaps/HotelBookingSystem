@@ -33,6 +33,13 @@ public class BookingDetailModelPage {
         }
     }
 
-    public boolean isClose(){}
+    public boolean isClose(){
+        try{
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(guestName));
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+    }
 
 }
