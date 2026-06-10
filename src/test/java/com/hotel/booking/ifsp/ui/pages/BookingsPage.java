@@ -31,7 +31,7 @@ public class BookingsPage extends BasePage {
         return isVisible(row);
     }
 
-    public void clickVieDetails(String guestName) {
+    public void clickViewDetails(String guestName) {
         By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Ver detalhes']");
         click(btn);
     }
