@@ -74,5 +74,39 @@ public class BookingFlowUiTest extends UiTestBase {
         assertThat(bookingsPage.isCancelButtonVisible(guestName))
                 .as("Botão cancelar não deve mais existir após cancelamento").isFalse();
     }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Created booking appears in booking list")
+    void shouldDisplayCreatedBookingInBookingList() {
+
+        Faker faker = new Faker(Locale.forLanguageTag("pt-BR"));
+        String guestName = faker.name().fullName();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("admin@hotel.com", "admin123");
+
+        assertThat(loginPage.isLoginSuccessful()).isTrue();
+
+        SidebarPage sidebar = new SidebarPage(driver);
+        sidebar.goToBookings();
+
+        BookingsPage bookingsPage = new BookingsPage(driver);
+
+        BookingDrawerPage drawer =
+                bookingsPage.openNewBookingDrawer();
+
+        drawer.fillGuestName(guestName);
+        drawer.fillCpf(cpfValido);
+        drawer.selectDeluxeRoom();
+
+        drawer.fillCheckIn(LocalDate.now().plusDays(20));
+        drawer.fillCheckOut(LocalDate.now().plusDays(22));
+
+        drawer.confirmReservation();
+
+        assertThat(bookingsPage.isBookingVisible(guestName))
+                .isTrue();
+    }
 }
 

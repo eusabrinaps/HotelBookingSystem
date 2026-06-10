@@ -34,4 +34,55 @@ class NavigationUiTest extends UiTestBase {
         sidebarPage.logout();
         assertThat(loginPage.isOnLoginTab()).isTrue();
     }
+
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Unauthenticated user cannot access bookings page")
+    void shouldRedirectUnauthenticatedUserToLoginPage() {
+
+        driver.get(BASE_URL + "/bookings");
+
+        assertThat(driver.getCurrentUrl())
+                .contains("/login");
+    }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Authenticated user can access guests page directly")
+    void shouldAccessGuestsPageDirectly() {
+
+        login();
+
+        driver.get(BASE_URL + "/guests");
+
+        assertThat(driver.getCurrentUrl())
+                .contains("/guests");
+    }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Authenticated user can access bookings page directly")
+    void shouldAccessBookingsPageDirectly() {
+
+        login();
+
+        driver.get(BASE_URL + "/bookings");
+
+        assertThat(driver.getCurrentUrl())
+                .contains("/bookings");
+    }
+
+    private void login() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login(
+                "admin@hotel.com",
+                "admin123"
+        );
+
+        assertThat(loginPage.isLoginSuccessful())
+                .isTrue();
+    }
 }
