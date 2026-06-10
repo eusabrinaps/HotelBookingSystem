@@ -306,6 +306,31 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .statusCode(401);
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings with checkout before checkin returns 400")
+    void shouldReturn400WhenCheckoutIsBeforeCheckin() {
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().plusDays(10).toString(),
+                "checkOut", LocalDate.now().plusDays(5).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(400);
+    }
+
+
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
