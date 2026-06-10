@@ -93,6 +93,53 @@ public class ValidationAndResponsiveUiTest extends UiTestBase {
         assertThat(guestsPage.isLoaded()).isTrue();
     }
 
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Booking form rejects checkout equal to checkin")
+    void shouldRejectCheckoutEqualToCheckin() {
+
+        BookingsPage bookingsPage = loginAndGoToBookings();
+
+        BookingDrawerPage drawerPage =
+                bookingsPage.openNewBookingDrawer();
+
+        LocalDate date = LocalDate.now().plusDays(20);
+
+        drawerPage.fillGuestName(faker.name().fullName());
+        drawerPage.fillCpf("123.456.789-09");
+        drawerPage.selectDeluxeRoom();
+
+        drawerPage.fillCheckIn(date);
+        drawerPage.fillCheckOut(date);
+
+        drawerPage.confirmReservation();
+
+        assertThat(drawerPage.isOpen())
+                .isTrue();
+    }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Booking form requires room category")
+    void shouldRequireRoomCategory() {
+
+        BookingsPage bookingsPage = loginAndGoToBookings();
+
+        BookingDrawerPage drawerPage =
+                bookingsPage.openNewBookingDrawer();
+
+        drawerPage.fillGuestName(faker.name().fullName());
+        drawerPage.fillCpf("123.456.789-09");
+
+        drawerPage.fillCheckIn(LocalDate.now().plusDays(20));
+        drawerPage.fillCheckOut(LocalDate.now().plusDays(22));
+
+        drawerPage.confirmReservation();
+
+        assertThat(drawerPage.isOpen())
+                .isTrue();
+    }
+
     private BookingsPage loginAndGoToBookings() {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("admin@hotel.com", "admin123");

@@ -1,6 +1,9 @@
 package com.hotel.booking.ifsp.ui;
 
+import com.hotel.booking.ifsp.ui.pages.BookingsPage;
+import com.hotel.booking.ifsp.ui.pages.DashboardPage;
 import com.hotel.booking.ifsp.ui.pages.LoginPage;
+import com.hotel.booking.ifsp.ui.pages.SidebarPage;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -147,5 +150,32 @@ class LoginPageUiTest extends UiTestBase {
         page.register(name, lastname, email, "senha123", "senha123");
 
         assertThat(page.isLoginSuccessful()).isTrue();
+    }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Refresh keeps authenticated session")
+    void shouldKeepSessionAfterRefresh() {
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("admin@hotel.com", "admin123");
+
+        assertThat(loginPage.isLoginSuccessful())
+                .as("Login deve ser realizado com sucesso")
+                .isTrue();
+
+        SidebarPage sidebar = new SidebarPage(driver);
+        sidebar.goToBookings();
+
+        BookingsPage bookingsPage = new BookingsPage(driver);
+        assertThat(bookingsPage.isLoaded())
+                .as("Deve estar na página de Reservas")
+                .isTrue();
+
+        driver.navigate().refresh();
+
+        assertThat(bookingsPage.isLoaded())
+                .as("Após atualizar a página deve permanecer na tela de Reservas")
+                .isTrue();
     }
 }
