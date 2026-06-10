@@ -397,6 +397,47 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .statusCode(404);
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PATCH cancel unknown booking returns 404")
+    void shouldReturn404WhenCancellingUnknownBooking() {
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/cancel", UNKNOWN_BOOKING_ID)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PATCH checkin unknown booking returns 404")
+    void shouldReturn404WhenCheckingInUnknownBooking() {
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/checkin", UNKNOWN_BOOKING_ID)
+                .then()
+                .statusCode(404);
+    }
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PATCH checkout unknown booking returns 404")
+    void shouldReturn404WhenCheckingOutUnknownBooking() {
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/checkout", UNKNOWN_BOOKING_ID)
+                .then()
+                .statusCode(404);
+    }
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
