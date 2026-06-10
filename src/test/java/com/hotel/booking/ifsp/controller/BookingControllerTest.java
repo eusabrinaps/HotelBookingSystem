@@ -286,6 +286,25 @@ class BookingControllerTest extends ApiIntegrationTestBase {
     @Test
     @Tag("ApiTest")
     @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/cancel without token returns 401")
+    void shouldReturn401WhenCancellingBookingWithoutToken() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(12),
+                BookingStatus.PENDING
+        );
+
+        given()
+                .when()
+                .patch("/api/v1/bookings/{id}/cancel", bookingId)
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
     @DisplayName("PUT /bookings without token returns 401")
     void shouldReturn401WhenUpdatingBookingWithoutToken() {
         UUID bookingId = createBooking(
