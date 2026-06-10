@@ -26,4 +26,14 @@ public class TransactionControllerTest extends ApiIntegrationTestBase {
                 .body(containsString("Hello: "));
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("GET /hello without token returns 401")
+    void HelloWithoutTokenReturns401() {
+        given()
+                .when().get("/api/v1/hello")
+                .then().statusCode(401);
+    }
+
 }
