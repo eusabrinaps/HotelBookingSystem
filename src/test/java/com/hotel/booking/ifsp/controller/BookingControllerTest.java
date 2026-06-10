@@ -316,7 +316,7 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 "guestId", GUEST_ID.toString(),
                 "roomCategory", "STANDARD",
                 "checkIn", LocalDate.now().plusDays(10).toString(),
-                "checkOut", LocalDate.now().plusDays(5).toString()
+                "checkOut", LocalDate.now().plusDays(9).toString()
         );
 
         given()
@@ -327,6 +327,86 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .post("/api/v1/bookings")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PUT /bookings with checkout before checkin returns 400")
+    void shouldReturn400WhenUpdatingBookingWithCheckoutBeforeCheckin() {
+
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(12),
+                BookingStatus.PENDING
+        );
+
+        Map<String, Object> body = Map.of(
+                "roomCategory", "DELUXE",
+                "checkIn", LocalDate.now().plusDays(20).toString(),
+                "checkOut", LocalDate.now().plusDays(15).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .put("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings with checkout equal to checkin returns 400")
+    void shouldReturn400WhenCheckoutEqualsCheckin() {
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().plusDays(20),
+                "checkOut", LocalDate.now().plusDays(20)
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings with minimum valid stay returns 201")
+    void shouldCreateBookingWithMinimumValidStay() {
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().plusDays(10),
+                "checkOut", LocalDate.now().plusDays(11)
+        );
+
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+
+        UUID bookingId = extractUuid(response);
+        createdBookingIds.add(bookingId);
     }
 
     @Test
