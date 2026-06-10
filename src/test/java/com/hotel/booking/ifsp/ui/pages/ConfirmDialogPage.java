@@ -21,6 +21,24 @@ public class ConfirmDialogPage {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
+    public boolean isOpen() {
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(backButton));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isClosed() {
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(backButton));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String getTitle(){
         return wait.until(ExpectedConditions.visibilityOfElementLocated(dialogTitle)).getText();
     }
