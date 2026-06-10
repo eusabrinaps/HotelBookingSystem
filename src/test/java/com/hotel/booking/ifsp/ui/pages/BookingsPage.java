@@ -31,8 +31,12 @@ public class BookingsPage extends BasePage {
         return isVisible(row);
     }
 
-    public void clickViewDetails(String guestName) {
+    public void clickVieDetails(String guestName) {
         By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Ver detalhes']");
+        click(btn);
+    }
+    public void clickCancelBooking(String guestName) {
+        By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Cancelar']");
         click(btn);
     }
 }
