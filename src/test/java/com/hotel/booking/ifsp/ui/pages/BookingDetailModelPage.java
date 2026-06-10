@@ -54,4 +54,12 @@ public class BookingDetailModelPage {
         wait.until(ExpectedConditions.elementToBeClickable(cancelButton)).click();
     }
 
+    public void clickCheckIn() {
+        wait.until(ExpectedConditions.elementToBeClickable(checkinButton)).click();
+    }
+
+    public void clickCheckOut() {
+        wait.until(ExpectedConditions.elementToBeClickable(checkoutButton)).click();
+    }
+
 }
