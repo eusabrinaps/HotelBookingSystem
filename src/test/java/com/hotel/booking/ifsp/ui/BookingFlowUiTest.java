@@ -75,4 +75,4 @@ public class BookingFlowUiTest extends UiTestBase {
                 .as("Botão cancelar não deve mais existir após cancelamento").isFalse();
     }
 }
-}
+
