@@ -20,4 +20,11 @@ public class BookingsPage extends BasePage {
         click(NEW_BOOKING_BUTTON);
         return new BookingDrawerPage(driver);
     }
+
+    public void search(String text) {
+        By searchInput = By.cssSelector("input[placeholder='Buscar por nome, CPF ou ID...']");
+        type(searchInput, text);
+    }
+
+
 }
