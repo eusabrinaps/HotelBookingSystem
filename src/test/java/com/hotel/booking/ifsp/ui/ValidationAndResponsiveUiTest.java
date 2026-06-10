@@ -33,6 +33,25 @@ public class ValidationAndResponsiveUiTest extends UiTestBase {
         assertThat(drawerPage.isOpen()).isTrue();
     }
 
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Booking form rejects invalid CPF")
+    void shouldRejectInvalidCpf() {
+        BookingsPage bookingsPage = loginAndGoToBookings();
+
+        BookingDrawerPage drawerPage = bookingsPage.openNewBookingDrawer();
+        assertThat(drawerPage.isOpen()).isTrue();
+
+        drawerPage.fillGuestName(faker.name().fullName());
+        drawerPage.fillCpf("123");
+        drawerPage.selectDeluxeRoom();
+        drawerPage.fillCheckIn(LocalDate.now().plusDays(20));
+        drawerPage.fillCheckOut(LocalDate.now().plusDays(22));
+        drawerPage.confirmReservation();
+
+        assertThat(drawerPage.isOpen()).isTrue();
+    }
+
     private BookingsPage loginAndGoToBookings() {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("admin@hotel.com", "admin123");
