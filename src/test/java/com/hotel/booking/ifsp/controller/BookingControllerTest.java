@@ -248,6 +248,41 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .body("status", equalTo("COMPLETED"));
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("GET /bookings without token returns 401")
+    void shouldReturn401WhenListingBookingsWithoutToken() {
+
+        given()
+                .when()
+                .get("/api/v1/bookings")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings without token returns 401")
+    void shouldReturn401WhenCreatingBookingWithoutToken() {
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().plusDays(20).toString(),
+                "checkOut", LocalDate.now().plusDays(22).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(401);
+    }
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
