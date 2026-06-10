@@ -20,4 +20,28 @@ public class BookingsPage extends BasePage {
         click(NEW_BOOKING_BUTTON);
         return new BookingDrawerPage(driver);
     }
+
+    public void search(String text) {
+        By searchInput = By.cssSelector("input[placeholder='Buscar por nome, CPF ou ID...']");
+        type(searchInput, text);
+    }
+
+    public boolean isBookingVisible(String guestName) {
+        By row = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]");
+        return isVisible(row);
+    }
+
+    public void clickViewDetails(String guestName) {
+        By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Ver detalhes']");
+        click(btn);
+    }
+    public void clickCancelBooking(String guestName) {
+        By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Cancelar']");
+        click(btn);
+    }
+
+    public boolean isCancelButtonVisible(String guestName) {
+        By btn = By.xpath("//table//tbody//tr[contains(.,'" + guestName + "')]//button[@title='Cancelar']");
+        return !driver.findElements(btn).isEmpty();
+    }
 }
