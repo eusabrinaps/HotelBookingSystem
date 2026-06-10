@@ -1,0 +1,23 @@
+package com.hotel.booking.ifsp.ui.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class BookingsPage extends BasePage {
+
+    private static final By TITLE = By.xpath("//h1[normalize-space()='Reservas']");
+    private static final By NEW_BOOKING_BUTTON = By.xpath("//button[contains(normalize-space(.),'Nova Reserva')]");
+
+    public BookingsPage(WebDriver driver) {
+        super(driver);
+    }
+
+    public boolean isLoaded() {
+        return isVisible(TITLE);
+    }
+
+    public BookingDrawerPage openNewBookingDrawer() {
+        click(NEW_BOOKING_BUTTON);
+        return new BookingDrawerPage(driver);
+    }
+}
