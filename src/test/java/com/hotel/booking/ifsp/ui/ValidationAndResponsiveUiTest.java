@@ -1,14 +1,11 @@
 package com.hotel.booking.ifsp.ui;
 
-import com.hotel.booking.ifsp.ui.pages.BookingDrawerPage;
-import com.hotel.booking.ifsp.ui.pages.BookingsPage;
-import com.hotel.booking.ifsp.ui.pages.LoginPage;
-import com.hotel.booking.ifsp.ui.pages.SidebarPage;
+import com.hotel.booking.ifsp.ui.pages.*;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
+import org.openqa.selenium.Dimension;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,6 +66,31 @@ public class ValidationAndResponsiveUiTest extends UiTestBase {
         drawerPage.confirmReservation();
 
         assertThat(drawerPage.isOpen()).isTrue();
+    }
+
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Main pages render on mobile viewport")
+    void shouldRenderMainPagesOnMobileViewport() {
+        driver.manage().window().setSize(new Dimension(390, 844));
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("admin@hotel.com", "admin123");
+
+        DashboardPage dashboardPage = new DashboardPage(driver);
+        assertThat(dashboardPage.isLoaded()).isTrue();
+
+        SidebarPage sidebarPage = new SidebarPage(driver);
+
+        sidebarPage.goToBookings();
+
+        BookingsPage bookingsPage = new BookingsPage(driver);
+        assertThat(bookingsPage.isLoaded()).isTrue();
+
+        sidebarPage.goToGuests();
+
+        GuestsPage guestsPage = new GuestsPage(driver);
+        assertThat(guestsPage.isLoaded()).isTrue();
     }
 
     private BookingsPage loginAndGoToBookings() {
