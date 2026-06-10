@@ -65,7 +65,29 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
                 );
     }
 
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("countOverlappingBookings counts active overlapping bookings")
+    void shouldCountOverlappingActiveBookings() {
+        BookingEntity booking = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 15),
+                BookingStatus.PENDING
+        );
 
+        bookingRepository.save(booking);
+
+        long result = countOverlappingBookings(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 12),
+                LocalDate.of(2025, 2, 14),
+                null
+        );
+
+        assertThat(result).isEqualTo(1L);
+    }
 
     private long countOverlappingBookings(
             RoomCategory roomCategory,
