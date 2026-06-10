@@ -14,7 +14,7 @@ public class ConfirmDialogPage {
 
     private static final By backButton = By.xpath("//button[normalize-space(.)='Voltar']");
     private static final By confirmButton = By.xpath("//button[contains(@class,'bg-red-500')]");
-    private static final By dialogTitle = By.xpath("//button[normalize-space(.)='Voltar']/ancestor::div[contains(@class,'rounded-2xl')]//h3")
+    private static final By dialogTitle = By.xpath("//button[normalize-space(.)='Voltar']/ancestor::div[contains(@class,'rounded-2xl')]//h3");
 
     public ConfirmDialogPage(WebDriver driver){
         this.driver = driver;
