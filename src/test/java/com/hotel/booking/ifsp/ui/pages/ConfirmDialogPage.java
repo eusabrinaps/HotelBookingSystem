@@ -48,6 +48,6 @@ public class ConfirmDialogPage {
     }
 
     public void back(){
-        wait.until(ExpectedConditions.elementToBeClickable(backButton));
+        wait.until(ExpectedConditions.elementToBeClickable(backButton)).click();
     }
 }
