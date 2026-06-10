@@ -42,4 +42,16 @@ public class BookingDetailModelPage {
         }
     }
 
+    public String getGuestName(){
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(guestName)).getText();
+    }
+
+    public void close() {
+        wait.until(ExpectedConditions.elementToBeClickable(closingButton)).click();
+    }
+
+    public void clickCancel() {
+        wait.until(ExpectedConditions.elementToBeClickable(cancelButton)).click();
+    }
+
 }
