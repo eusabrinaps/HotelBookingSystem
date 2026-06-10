@@ -118,6 +118,28 @@ public class ValidationAndResponsiveUiTest extends UiTestBase {
                 .isTrue();
     }
 
+    @Test
+    @Tag("UiTest")
+    @DisplayName("Booking form requires room category")
+    void shouldRequireRoomCategory() {
+
+        BookingsPage bookingsPage = loginAndGoToBookings();
+
+        BookingDrawerPage drawerPage =
+                bookingsPage.openNewBookingDrawer();
+
+        drawerPage.fillGuestName(faker.name().fullName());
+        drawerPage.fillCpf("123.456.789-09");
+
+        drawerPage.fillCheckIn(LocalDate.now().plusDays(20));
+        drawerPage.fillCheckOut(LocalDate.now().plusDays(22));
+
+        drawerPage.confirmReservation();
+
+        assertThat(drawerPage.isOpen())
+                .isTrue();
+    }
+
     private BookingsPage loginAndGoToBookings() {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("admin@hotel.com", "admin123");
