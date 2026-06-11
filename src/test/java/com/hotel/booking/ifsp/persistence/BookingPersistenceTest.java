@@ -191,6 +191,30 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
         assertThat(result).isZero();
     }
 
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("countOverlappingBookings does not count when checkin equals existing checkout")
+    void shouldNotCountOverlapWhenCheckinEqualsExistingCheckout() {
+        BookingEntity existingBooking = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 15),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.save(existingBooking);
+
+        long result = countOverlappingBookings(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 15),
+                LocalDate.of(2025, 2, 18),
+                null
+        );
+
+        assertThat(result).isZero();
+    }
+
     private long countOverlappingBookings(
             RoomCategory roomCategory,
             LocalDate checkIn,
