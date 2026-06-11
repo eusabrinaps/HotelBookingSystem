@@ -1,5 +1,6 @@
 package com.hotel.booking.ifsp.controller;
 
+import com.hotel.booking.ifsp.config.RoomInventoryProperties;
 import com.hotel.booking.ifsp.domain.booking.BookingStatus;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import com.hotel.booking.ifsp.infrastructure.persistence.BookingEntity;
@@ -10,6 +11,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -19,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
@@ -33,6 +38,8 @@ class BookingControllerTest extends ApiIntegrationTestBase {
 
     @Autowired
     private JpaBookingRepositorySpring bookingRepository;
+    @Autowired
+    private RoomInventoryProperties roomInventory;
 
     private final List<UUID> createdBookingIds = new ArrayList<>();
 
@@ -702,6 +709,104 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .patch("/api/v1/bookings/{id}/checkout", UNKNOWN_BOOKING_ID)
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings with past check-in returns 400")
+    void shouldReturn400WhenCreatingBookingWithPastCheckIn() {
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().minusDays(1).toString(),
+                "checkOut", LocalDate.now().plusDays(1).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(400)
+                .body("message", containsString("Cannot book a reservation in the past"));
+    }
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings without available room returns 409")
+    void shouldReturn409WhenRoomIsUnavailable() {
+        LocalDate checkIn = LocalDate.now().plusDays(60);
+        LocalDate checkOut = LocalDate.now().plusDays(62);
+        RoomCategory roomCategory = RoomCategory.DELUXE;
+
+        int availableRooms = roomInventory.getCountFor(roomCategory);
+
+        for (int i = 0; i < availableRooms; i++) {
+            createBooking(
+                    roomCategory,
+                    checkIn,
+                    checkOut,
+                    BookingStatus.PENDING
+            );
+        }
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", roomCategory.name(),
+                "checkIn", checkIn.toString(),
+                "checkOut", checkOut.toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(409)
+                .body("message", containsString("No room available"));
+    }
+
+    @ParameterizedTest(name = "PUT /bookings rejects update when status is {0}")
+    @MethodSource("nonPendingBookingStatuses")
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("PUT /bookings/{id} rejects update of non-pending bookings")
+    void shouldReturn403WhenUpdatingNonPendingBooking(BookingStatus status) {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(70),
+                LocalDate.now().plusDays(72),
+                status
+        );
+
+        Map<String, Object> body = Map.of(
+                "roomCategory", "DELUXE",
+                "checkIn", LocalDate.now().plusDays(80).toString(),
+                "checkOut", LocalDate.now().plusDays(82).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .put("/api/v1/bookings/{id}", bookingId)
+                .then()
+                .statusCode(403)
+                .body("message", notNullValue());
+    }
+
+    static Stream<Arguments> nonPendingBookingStatuses() {
+        return Stream.of(
+                Arguments.of(BookingStatus.CANCELLED),
+                Arguments.of(BookingStatus.COMPLETED),
+                Arguments.of(BookingStatus.CHECKED_IN)
+        );
     }
 
     private UUID createBooking(

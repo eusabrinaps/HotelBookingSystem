@@ -4,6 +4,10 @@ import com.hotel.booking.ifsp.domain.booking.BookingStatus;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import com.hotel.booking.ifsp.infrastructure.persistence.BookingEntity;
 import com.hotel.booking.ifsp.infrastructure.persistence.JpaBookingRepositorySpring;
+import com.hotel.booking.ifsp.domain.booking.Booking;
+import com.hotel.booking.ifsp.domain.booking.Period;
+import com.hotel.booking.ifsp.domain.guest.GuestId;
+import com.hotel.booking.ifsp.infrastructure.persistence.BookingRepositoryAdapter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -25,6 +29,8 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
 
     @Autowired
     private JpaBookingRepositorySpring bookingRepository;
+    @Autowired
+    private BookingRepositoryAdapter bookingRepositoryAdapter;
 
     @Test
     @Tag("PersistenceTest")
@@ -159,6 +165,109 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
         );
 
         assertThat(result).isZero();
+    }
+
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("countOverlappingBookings does not count when checkout equals existing checkin")
+    void shouldNotCountOverlapWhenCheckoutEqualsExistingCheckin() {
+        BookingEntity existingBooking = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 15),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.save(existingBooking);
+
+        long result = countOverlappingBookings(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 8),
+                LocalDate.of(2025, 2, 10),
+                null
+        );
+
+        assertThat(result).isZero();
+    }
+
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("countOverlappingBookings does not count when checkin equals existing checkout")
+    void shouldNotCountOverlapWhenCheckinEqualsExistingCheckout() {
+        BookingEntity existingBooking = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 15),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.save(existingBooking);
+
+        long result = countOverlappingBookings(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 15),
+                LocalDate.of(2025, 2, 18),
+                null
+        );
+
+        assertThat(result).isZero();
+    }
+
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("save persists calculated booking total value")
+    void shouldPersistCalculatedBookingTotalValue() {
+        Booking booking = Booking.create(
+                new GuestId(GUEST_ID),
+                RoomCategory.STANDARD,
+                new Period(
+                        LocalDate.of(2025, 7, 10),
+                        LocalDate.of(2025, 7, 13)
+                )
+        );
+
+        Booking savedBooking = bookingRepositoryAdapter.save(booking);
+
+        var savedEntity = bookingRepository.findById(savedBooking.getId().value());
+
+        assertThat(savedEntity).isPresent();
+        assertThat(savedEntity.get().getTotalValue())
+                .isEqualByComparingTo(new BigDecimal("450.00"));
+    }
+
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("findAllByOrderByCheckInAsc includes bookings with same checkin")
+    void shouldIncludeBookingsWithSameCheckin() {
+        LocalDate sameCheckIn = LocalDate.of(2025, 8, 10);
+
+        BookingEntity firstBooking = createBooking(
+                RoomCategory.STANDARD,
+                sameCheckIn,
+                LocalDate.of(2025, 8, 12),
+                BookingStatus.PENDING
+        );
+
+        BookingEntity secondBooking = createBooking(
+                RoomCategory.DELUXE,
+                sameCheckIn,
+                LocalDate.of(2025, 8, 13),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.saveAll(List.of(firstBooking, secondBooking));
+
+        List<UUID> resultIds = bookingRepository.findAllByOrderByCheckInAsc()
+                .stream()
+                .map(BookingEntity::getId)
+                .toList();
+
+        assertThat(resultIds)
+                .contains(firstBooking.getId(), secondBooking.getId());
     }
 
     private long countOverlappingBookings(
