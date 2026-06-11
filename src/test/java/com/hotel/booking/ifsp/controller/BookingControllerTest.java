@@ -673,6 +673,26 @@ class BookingControllerTest extends ApiIntegrationTestBase {
     @Test
     @Tag("ApiTest")
     @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/checkout on pending booking returns 400")
+    void shouldReturn4xxWhenCheckingOutPendingBooking() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(2),
+                BookingStatus.PENDING
+        );
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/checkout", bookingId)
+                .then()
+                .statusCode(greaterThanOrEqualTo(400));
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
     @DisplayName("PATCH checkout unknown booking returns 404")
     void shouldReturn404WhenCheckingOutUnknownBooking() {
 
