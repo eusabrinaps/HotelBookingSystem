@@ -324,6 +324,25 @@ class BookingControllerTest extends ApiIntegrationTestBase {
     @Test
     @Tag("ApiTest")
     @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/checkout without token returns 401")
+    void shouldReturn401WhenCheckingOutBookingWithoutToken() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(2),
+                BookingStatus.CHECKED_IN
+        );
+
+        given()
+                .when()
+                .patch("/api/v1/bookings/{id}/checkout", bookingId)
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
     @DisplayName("PUT /bookings without token returns 401")
     void shouldReturn401WhenUpdatingBookingWithoutToken() {
         UUID bookingId = createBooking(
