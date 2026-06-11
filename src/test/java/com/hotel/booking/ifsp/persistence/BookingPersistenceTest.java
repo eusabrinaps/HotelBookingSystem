@@ -4,6 +4,10 @@ import com.hotel.booking.ifsp.domain.booking.BookingStatus;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import com.hotel.booking.ifsp.infrastructure.persistence.BookingEntity;
 import com.hotel.booking.ifsp.infrastructure.persistence.JpaBookingRepositorySpring;
+import com.hotel.booking.ifsp.domain.booking.Booking;
+import com.hotel.booking.ifsp.domain.booking.Period;
+import com.hotel.booking.ifsp.domain.guest.GuestId;
+import com.hotel.booking.ifsp.infrastructure.persistence.BookingRepositoryAdapter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -25,6 +29,8 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
 
     @Autowired
     private JpaBookingRepositorySpring bookingRepository;
+    @Autowired
+    private BookingRepositoryAdapter bookingRepositoryAdapter;
 
     @Test
     @Tag("PersistenceTest")
@@ -155,6 +161,30 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
                 RoomCategory.DELUXE,
                 LocalDate.of(2025, 5, 12),
                 LocalDate.of(2025, 5, 14),
+                null
+        );
+
+        assertThat(result).isZero();
+    }
+
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("countOverlappingBookings does not count when checkout equals existing checkin")
+    void shouldNotCountOverlapWhenCheckoutEqualsExistingCheckin() {
+        BookingEntity existingBooking = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 10),
+                LocalDate.of(2025, 2, 15),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.save(existingBooking);
+
+        long result = countOverlappingBookings(
+                RoomCategory.STANDARD,
+                LocalDate.of(2025, 2, 8),
+                LocalDate.of(2025, 2, 10),
                 null
         );
 
