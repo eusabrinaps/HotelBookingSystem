@@ -1,5 +1,6 @@
 package com.hotel.booking.ifsp.controller;
 
+import com.hotel.booking.ifsp.config.RoomInventoryProperties;
 import com.hotel.booking.ifsp.domain.booking.BookingStatus;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import com.hotel.booking.ifsp.infrastructure.persistence.BookingEntity;
@@ -33,6 +34,8 @@ class BookingControllerTest extends ApiIntegrationTestBase {
 
     @Autowired
     private JpaBookingRepositorySpring bookingRepository;
+    @Autowired
+    private RoomInventoryProperties roomInventory;
 
     private final List<UUID> createdBookingIds = new ArrayList<>();
 
@@ -725,6 +728,43 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .then()
                 .statusCode(400)
                 .body("message", containsString("Cannot book a reservation in the past"));
+    }
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings without available room returns 409")
+    void shouldReturn409WhenRoomIsUnavailable() {
+        LocalDate checkIn = LocalDate.now().plusDays(60);
+        LocalDate checkOut = LocalDate.now().plusDays(62);
+        RoomCategory roomCategory = RoomCategory.DELUXE;
+
+        int availableRooms = roomInventory.getCountFor(roomCategory);
+
+        for (int i = 0; i < availableRooms; i++) {
+            createBooking(
+                    roomCategory,
+                    checkIn,
+                    checkOut,
+                    BookingStatus.PENDING
+            );
+        }
+
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", roomCategory.name(),
+                "checkIn", checkIn.toString(),
+                "checkOut", checkOut.toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(409)
+                .body("message", containsString("No room available"));
     }
 
     private UUID createBooking(
