@@ -215,6 +215,29 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
         assertThat(result).isZero();
     }
 
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("save persists calculated booking total value")
+    void shouldPersistCalculatedBookingTotalValue() {
+        Booking booking = Booking.create(
+                new GuestId(GUEST_ID),
+                RoomCategory.STANDARD,
+                new Period(
+                        LocalDate.of(2025, 7, 10),
+                        LocalDate.of(2025, 7, 13)
+                )
+        );
+
+        Booking savedBooking = bookingRepositoryAdapter.save(booking);
+
+        var savedEntity = bookingRepository.findById(savedBooking.getId().value());
+
+        assertThat(savedEntity).isPresent();
+        assertThat(savedEntity.get().getTotalValue())
+                .isEqualByComparingTo(new BigDecimal("450.00"));
+    }
+
     private long countOverlappingBookings(
             RoomCategory roomCategory,
             LocalDate checkIn,
