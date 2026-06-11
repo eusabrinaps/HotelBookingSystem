@@ -620,6 +620,26 @@ class BookingControllerTest extends ApiIntegrationTestBase {
     @Test
     @Tag("ApiTest")
     @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/checkin before check-in date returns 400")
+    void shouldReturn4xxWhenCheckingInBeforeScheduledDate() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(5),
+                LocalDate.now().plusDays(8),
+                BookingStatus.PENDING
+        );
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/checkin", bookingId)
+                .then()
+                .statusCode(greaterThanOrEqualTo(400));
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
     @DisplayName("PATCH checkin unknown booking returns 404")
     void shouldReturn404WhenCheckingInUnknownBooking() {
 
