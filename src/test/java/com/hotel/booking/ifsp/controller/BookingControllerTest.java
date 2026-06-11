@@ -586,6 +586,26 @@ class BookingControllerTest extends ApiIntegrationTestBase {
     @Test
     @Tag("ApiTest")
     @Tag("IntegrationTest")
+    @DisplayName("PATCH /bookings/{id}/cancel on completed booking returns 400")
+    void shouldReturn4xxWhenCancellingCompletedBooking() {
+        UUID bookingId = createBooking(
+                RoomCategory.STANDARD,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(12),
+                BookingStatus.COMPLETED
+        );
+
+        given()
+                .header("Authorization", "Bearer " + getAdminToken())
+                .when()
+                .patch("/api/v1/bookings/{id}/cancel", bookingId)
+                .then()
+                .statusCode(greaterThanOrEqualTo(400));
+    }
+
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
     @DisplayName("PATCH cancel unknown booking returns 404")
     void shouldReturn404WhenCancellingUnknownBooking() {
 
