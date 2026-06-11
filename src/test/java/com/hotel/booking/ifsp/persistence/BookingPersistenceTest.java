@@ -238,6 +238,38 @@ public class BookingPersistenceTest extends PersistenceIntegrationTestBase{
                 .isEqualByComparingTo(new BigDecimal("450.00"));
     }
 
+    @Test
+    @Tag("PersistenceTest")
+    @Tag("IntegrationTest")
+    @DisplayName("findAllByOrderByCheckInAsc includes bookings with same checkin")
+    void shouldIncludeBookingsWithSameCheckin() {
+        LocalDate sameCheckIn = LocalDate.of(2025, 8, 10);
+
+        BookingEntity firstBooking = createBooking(
+                RoomCategory.STANDARD,
+                sameCheckIn,
+                LocalDate.of(2025, 8, 12),
+                BookingStatus.PENDING
+        );
+
+        BookingEntity secondBooking = createBooking(
+                RoomCategory.DELUXE,
+                sameCheckIn,
+                LocalDate.of(2025, 8, 13),
+                BookingStatus.PENDING
+        );
+
+        bookingRepository.saveAll(List.of(firstBooking, secondBooking));
+
+        List<UUID> resultIds = bookingRepository.findAllByOrderByCheckInAsc()
+                .stream()
+                .map(BookingEntity::getId)
+                .toList();
+
+        assertThat(resultIds)
+                .contains(firstBooking.getId(), secondBooking.getId());
+    }
+
     private long countOverlappingBookings(
             RoomCategory roomCategory,
             LocalDate checkIn,
