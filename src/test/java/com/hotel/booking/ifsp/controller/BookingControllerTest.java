@@ -704,6 +704,29 @@ class BookingControllerTest extends ApiIntegrationTestBase {
                 .statusCode(404);
     }
 
+    @Test
+    @Tag("ApiTest")
+    @Tag("IntegrationTest")
+    @DisplayName("POST /bookings with past check-in returns 400")
+    void shouldReturn400WhenCreatingBookingWithPastCheckIn() {
+        Map<String, Object> body = Map.of(
+                "guestId", GUEST_ID.toString(),
+                "roomCategory", "STANDARD",
+                "checkIn", LocalDate.now().minusDays(1).toString(),
+                "checkOut", LocalDate.now().plusDays(1).toString()
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + getAdminToken())
+                .body(body)
+                .when()
+                .post("/api/v1/bookings")
+                .then()
+                .statusCode(400)
+                .body("message", containsString("Cannot book a reservation in the past"));
+    }
+
     private UUID createBooking(
             RoomCategory roomCategory,
             LocalDate checkIn,
